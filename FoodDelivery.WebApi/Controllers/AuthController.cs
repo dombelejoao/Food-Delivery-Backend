@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using FoodDelivery.BusinessLogic.DTOs;
 using FoodDelivery.BusinessLogic.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +11,47 @@ namespace FoodDelivery.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] // all endpoints require authentication
 public class AuthController : ControllerBase
 {
+    [HttpGet]
+    public IActionResult GetOrders()
+    {
+        // For now, just return a placeholder
+        return Ok(new { message = "Orders retrieved successfully." });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id}")]
+    public IActionResult DeleteOrder(Guid id)
+    {
+        // Placeholder admin-only action
+        return Ok($"Order {id} deleted by admin.");
+    }
+
+    // Open endpoint (no auth)
+    [HttpGet("test")]
+    public IActionResult Test()
+    {
+        return Ok("This is a public endpoint.");
+    }
+
+    // Protected endpoint (requires JWT)
+    [Authorize]
+    [HttpGet("protected")]
+    public IActionResult Protected()
+    {
+        return Ok("You accessed a protected endpoint!");
+    }
+
+    // Admin-only endpoint
+    [Authorize(Roles = "Admin")]
+    [HttpGet("admin-only")]
+    public IActionResult AdminOnly()
+    {
+        return Ok("You are an admin!");
+    }
+
     private readonly AuthService _authService;
     private readonly IConfiguration _config;
 
@@ -24,11 +64,13 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register([FromBody] RegisterDto dto)
     {
-        var result = _authService.Register(dto.Email, dto.Password, dto.Name);
+        var role = string.IsNullOrEmpty(dto.Role) ? "User" : dto.Role;
+        var result = _authService.Register(dto.Email, dto.Password, dto.Name, role);
+
         if (!result)
             return BadRequest("User already exists.");
 
-        return Ok("Registration successful.");
+        return Ok($"Registration successful with role {role}.");
     }
 
     [HttpPost("login")]
@@ -40,11 +82,12 @@ public class AuthController : ControllerBase
 
         // JWT generation here
         var claims = new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Name, user.Name ?? "")
-        };
+{
+    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+    new Claim(ClaimTypes.Email, user.Email),
+    new Claim(ClaimTypes.Name, user.Name ?? ""),
+    new Claim(ClaimTypes.Role, user.Role) // New claim
+};
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
