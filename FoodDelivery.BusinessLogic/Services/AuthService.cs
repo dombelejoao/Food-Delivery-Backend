@@ -14,7 +14,7 @@ public class AuthService
         _context = context;
     }
 
-    public bool Register(string email, string password, string name)
+    public bool Register(string email, string password, string name, string role = "User")
     {
         if (_context.Users.Any(u => u.Email == email))
             return false;
@@ -26,7 +26,8 @@ public class AuthService
             Id = Guid.NewGuid(),
             Email = email,
             PasswordHash = hashedPassword,
-            Name = name
+            Name = name,
+            Role = role
         };
 
         _context.Users.Add(user);
