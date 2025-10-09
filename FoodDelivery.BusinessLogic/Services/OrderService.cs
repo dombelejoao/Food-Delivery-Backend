@@ -60,4 +60,18 @@ public class OrderService
 
         return order;
     }
+
+    public bool UpdateOrderStatus(Guid orderId, string status, string? notes = null)
+    {
+        var order = _context.Orders.Find(orderId);
+        if (order == null) return false;
+
+        order.Status = status;
+        order.DeliveryNotes = notes ?? order.DeliveryNotes;
+        if (status == "Delivered") order.DeliveredAt = DateTime.UtcNow;
+
+        _context.SaveChanges();
+        return true;
+    }
+
 }

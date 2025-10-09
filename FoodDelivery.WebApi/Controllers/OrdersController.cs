@@ -1,3 +1,4 @@
+using FoodDelivery.DataAccess;
 using System;
 using System.Security.Claims;
 using FoodDelivery.BusinessLogic.Services;
@@ -49,4 +50,14 @@ public class OrdersController : ControllerBase
     {
         return Ok(context.Orders.ToList());
     }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("{orderId}/status")]
+    public IActionResult UpdateStatus(Guid orderId, [FromBody] string newStatus)
+    {
+        var result = _orderService.UpdateOrderStatus(orderId, newStatus);
+        if (!result) return NotFound("Order not found");
+        return Ok($"Order {orderId} status updated to {newStatus}");
+    }
+
 }

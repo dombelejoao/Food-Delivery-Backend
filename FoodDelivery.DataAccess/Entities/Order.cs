@@ -14,4 +14,8 @@ public class Order
     // Navigation
     public User User { get; set; }
     public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+
+    public DateTime? DeliveredAt { get; set; }
+    public string DeliveryNotes { get; set; } = string.Empty;
+
 }
