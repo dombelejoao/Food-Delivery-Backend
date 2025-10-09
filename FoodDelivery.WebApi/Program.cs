@@ -59,6 +59,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<RatingService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
