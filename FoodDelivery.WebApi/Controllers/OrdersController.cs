@@ -60,4 +60,12 @@ public class OrdersController : ControllerBase
         return Ok($"Order {orderId} status updated to {newStatus}");
     }
 
+    [HttpGet]
+    public IActionResult GetUserOrders([FromQuery] int page = 1, [FromQuery] int size = 10)
+    {
+        var userId = GetUserId();
+        var result = _orderService.GetUserOrders(userId, page, size);
+        return Ok(result);
+    }
+
 }

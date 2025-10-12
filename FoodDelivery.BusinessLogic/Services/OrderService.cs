@@ -15,12 +15,14 @@ public class OrderService
         _context = context;
     }
 
-    public IEnumerable<Order> GetUserOrders(Guid userId)
+    public IEnumerable<Order> GetUserOrders(Guid userId, int page = 1, int size = 10)
     {
         return _context.Orders
             .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.MenuItem)
             .Where(o => o.UserId == userId)
+            .Skip((page - 1) * size)
+            .Take(size)
             .ToList();
     }
 

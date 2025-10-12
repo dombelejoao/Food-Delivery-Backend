@@ -49,4 +49,12 @@ public class MenuController : ControllerBase
     {
         return _menuService.Delete(id) ? Ok("Deleted") : NotFound();
     }
+
+    [HttpGet]
+    public IActionResult GetFiltered([FromQuery] string? category, [FromQuery] int page = 1, [FromQuery] int size = 10)
+    {
+        var result = _menuService.GetFiltered(category, page, size);
+        return Ok(result);
+    }
+
 }

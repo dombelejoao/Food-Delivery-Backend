@@ -33,4 +33,18 @@ public class MenuService
         _context.SaveChanges();
         return true;
     }
+
+    public IEnumerable<MenuItem> GetFiltered(string? category, int page = 1, int size = 10)
+    {
+        var query = _context.MenuItems.AsQueryable();
+
+        if (!string.IsNullOrEmpty(category))
+            query = query.Where(m => m.Category.ToLower() == category.ToLower());
+
+        return query
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToList();
+    }
+
 }

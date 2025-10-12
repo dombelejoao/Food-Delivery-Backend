@@ -1,4 +1,7 @@
-﻿using FoodDelivery.BusinessLogic.Services;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using FoodDelivery.BusinessLogic.Validators;
+using FoodDelivery.BusinessLogic.Services;
 using FoodDelivery.DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +65,9 @@ builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<RatingService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<MenuItemValidator>();
 
 var app = builder.Build();
 
@@ -80,6 +86,7 @@ if (app.Environment.IsDevelopment())
 
 // REMOVE THIS LINE for HTTP-only mode
 // app.UseHttpsRedirection();
+//dotnet run --project FoodDelivery.WebApi --urls "https://localhost:5000"
 
 app.UseAuthentication();
 app.UseAuthorization();
