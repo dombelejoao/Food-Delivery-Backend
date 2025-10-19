@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using FoodDelivery.WebApi.Middleware;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using FoodDelivery.BusinessLogic.Validators;
 using FoodDelivery.BusinessLogic.Services;
@@ -89,6 +90,8 @@ if (app.Environment.IsDevelopment())
 //dotnet run --project FoodDelivery.WebApi --urls "https://localhost:5000"
 
 app.UseAuthentication();
+app.UseRouting();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

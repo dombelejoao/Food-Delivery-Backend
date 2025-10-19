@@ -1,15 +1,15 @@
-using FoodDelivery.DataAccess;
-using System;
-using System.Security.Claims;
+﻿using FoodDelivery.BusinessLogic.Models;
 using FoodDelivery.BusinessLogic.Services;
+using FoodDelivery.DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace FoodDelivery.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
 public class OrdersController : ControllerBase
 {
     private readonly OrderService _orderService;
@@ -19,53 +19,39 @@ public class OrdersController : ControllerBase
         _orderService = orderService;
     }
 
-    private Guid GetUserId() =>
-        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-    [HttpPost]
-    public IActionResult CreateOrder()
-    {
-        var userId = GetUserId();
-        try
-        {
-            var order = _orderService.CreateOrder(userId);
-            return Ok(order);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    [HttpGet]
-    public IActionResult GetUserOrders()
-    {
-        var userId = GetUserId();
-        return Ok(_orderService.GetUserOrders(userId));
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpGet("all")]
-    public IActionResult GetAllOrders([FromServices] ApplicationDbContext context)
-    {
-        return Ok(context.Orders.ToList());
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPut("{orderId}/status")]
-    public IActionResult UpdateStatus(Guid orderId, [FromBody] string newStatus)
-    {
-        var result = _orderService.UpdateOrderStatus(orderId, newStatus);
-        if (!result) return NotFound("Order not found");
-        return Ok($"Order {orderId} status updated to {newStatus}");
-    }
-
+    // ✅ Returns only the authenticated user's orders
+    [Authorize]
     [HttpGet]
     public IActionResult GetUserOrders([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         var userId = GetUserId();
         var result = _orderService.GetUserOrders(userId, page, size);
-        return Ok(result);
+        return Ok(ApiResponse<IEnumerable<Order>>.SuccessResponse(result, "User orders retrieved successfully."));
     }
 
+    // ✅ Returns all orders — ADMIN only, with unique route
+    [Authorize(Roles = "Admin")]
+    [HttpGet("all")]
+    public IActionResult GetAllOrders([FromQuery] int page = 1, [FromQuery] int size = 10)
+    {
+        var result = _orderService.GetAllOrders(page, size);
+        return Ok(ApiResponse<IEnumerable<Order>>.SuccessResponse(result, "All orders retrieved successfully."));
+    }
+
+    // Example POST (if you have it)
+    [Authorize]
+    [HttpPost]
+    public IActionResult CreateOrder()
+    {
+        var userId = GetUserId();
+        var order = _orderService.CreateOrder(userId);
+        return Ok(ApiResponse<Order>.SuccessResponse(order, "Order created successfully."));
+    }
+
+    // Example helper (make sure this exists)
+    private Guid GetUserId()
+    {
+        var userIdClaim = User.FindFirst("id")?.Value;
+        return Guid.Parse(userIdClaim ?? throw new Exception("User ID not found in token"));
+    }
 }
