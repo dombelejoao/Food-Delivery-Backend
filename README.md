@@ -25,5 +25,5 @@ Implements JWT Authentication, Role-based Authorization, Order Management, and R
 
 ### 2️⃣ Clone Repository
 ```bash
-git clone https://github.com/your-username/Food-Delivery-Backend.git
+git clone https://github.com/dombelejoao/Food-Delivery-Backend.git
 cd Food-Delivery-Backend
