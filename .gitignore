@@ -1,0 +1,45 @@
+# Build results
+bin/
+obj/
+out/
+Debug/
+Release/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Rider / JetBrains
+.idea/
+*.iml
+
+# EF Core
+Migrations/
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+*.nuspec
+
+# Others
+*.cache
+*.bak
+*.swp
+*.tmp
