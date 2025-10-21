@@ -1,16 +1,19 @@
-using System;
+﻿using System;
 
-namespace FoodDelivery.DataAccess.Entities;
-
-public class OrderItem
+namespace FoodDelivery.DataAccess.Entities
 {
-    public Guid Id { get; set; }
-    public Guid OrderId { get; set; }
-    public Guid MenuItemId { get; set; }
-    public int Quantity { get; set; }
-    public decimal UnitPrice { get; set; }
+    public class OrderItem
+    {
+        public Guid Id { get; set; }
+        public Guid OrderId { get; set; }
+        public Guid MenuItemId { get; set; }
+        public int Quantity { get; set; }
 
-    // Navigation
-    public Order Order { get; set; }
-    public MenuItem MenuItem { get; set; }
+        // ✅ Add this property if it doesn’t exist yet
+        public decimal Price { get; set; }
+
+        // Relationships
+        public Order? Order { get; set; }
+        public MenuItem? MenuItem { get; set; }
+    }
 }
